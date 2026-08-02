@@ -1,0 +1,26 @@
+[
+  {
+    "week": "2026-06-22",
+    "project": "Northstar",
+    "summary": "Green. Shipped the checklist redesign; activation moved 37% -> 39% week-over-week. Next: instrument step-completion events.",
+    "theme": "status update format, green"
+  },
+  {
+    "week": "2026-06-15",
+    "project": "Vega",
+    "summary": "Yellow. Proration defect surfaced in QA; launch held. Escalated the date question to the eng lead and did NOT commit a new GA date.",
+    "theme": "launch hold, unconfirmed date, escalate"
+  },
+  {
+    "week": "2026-06-22",
+    "project": "Orbit",
+    "summary": "No external mention. Orbit is embargoed; status is shared only in the core-team channel, never company-wide.",
+    "theme": "confidential handling, embargo"
+  },
+  {
+    "week": "2026-06-08",
+    "project": "Northstar",
+    "summary": "Green. Discovery wrapped; PRD-Northstar-v3 approved. Proposed the first sprint's stories to sprint planning for the team to size.",
+    "theme": "backlog proposal, sprint planning"
+  }
+]

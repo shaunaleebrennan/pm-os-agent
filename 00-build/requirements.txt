@@ -1,0 +1,4 @@
+# Cortex starter, the transparent agent your coding agent builds with you.
+# Pinned to compatible ranges; bump deliberately.
+openai>=1.51        # the model client in agent.py / critic.py
+python-dotenv>=1.0  # loads .env so OPENAI_API_KEY etc. are picked up

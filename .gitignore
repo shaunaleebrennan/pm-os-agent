@@ -1,0 +1,22 @@
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Secrets, never commit API keys or agent credentials
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Agent runtime artifacts you don't want public yet
+*.local.json
+/traces/
+/runs/

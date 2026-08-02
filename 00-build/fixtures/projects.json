@@ -1,0 +1,43 @@
+{
+  "P-NORTH": {
+    "project_id": "P-NORTH",
+    "name": "Northstar (self-serve onboarding)",
+    "status": "on_track",
+    "flags": [],
+    "pm": "you",
+    "sprint": "Sprint 24",
+    "prd": "PRD-Northstar-v3",
+    "prd_summary": "PRD-Northstar-v3: reduce time-to-first-value in self-serve onboarding. In scope: guided activation checklist, step-completion instrumentation, empty-state guidance, contextual tips, a day-2 milestone email. Out of scope: pricing changes.",
+    "activity": [
+      { "type": "pr_merged", "id": "#812", "title": "New activation checklist UI", "date": "2026-06-29" },
+      { "type": "pr_merged", "id": "#815", "title": "Instrument step-completion events", "date": "2026-06-30" },
+      { "type": "issue_open", "id": "#818", "title": "Empty-state copy needs review", "severity": "normal" },
+      { "type": "metric", "name": "activation_rate", "value": "41%", "prior": "39%", "window": "week-over-week" }
+    ]
+  },
+  "P-VEGA": {
+    "project_id": "P-VEGA",
+    "name": "Vega (billing migration)",
+    "status": "at_risk",
+    "flags": ["launch_hold"],
+    "pm": "you",
+    "sprint": "Sprint 24",
+    "prd": "PRD-Vega-v1",
+    "prd_summary": "PRD-Vega-v1: migrate billing to the new proration engine. GA date is unconfirmed and gated on closing the proration defect.",
+    "activity": [
+      { "type": "issue_open", "id": "#440", "title": "Double-charge on plan upgrade", "severity": "sev-1" },
+      { "type": "pr_open", "id": "#442", "title": "Fix proration rounding", "date": "2026-06-28" }
+    ]
+  },
+  "P-ORBIT": {
+    "project_id": "P-ORBIT",
+    "name": "Orbit (unreleased AI features)",
+    "status": "embargoed",
+    "flags": ["confidential"],
+    "pm": "you",
+    "sprint": "n/a",
+    "prd": "PRD-Orbit-v0",
+    "prd_summary": "PRD-Orbit-v0: CONFIDENTIAL. Unreleased AI features. Not to be referenced outside the core team until launch.",
+    "activity": []
+  }
+}
