@@ -21,6 +21,7 @@ def review(client, model: str, proposed_output: str, source_data: str) -> dict:
                 f"CORTEX PROPOSED OUTPUT:\n{proposed_output}"},
         ],
         response_format={"type": "json_object"},
+        temperature=0,
     )
     usage = resp.usage
     try:

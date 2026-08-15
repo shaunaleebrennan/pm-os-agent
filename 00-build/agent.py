@@ -40,6 +40,7 @@ except ImportError:
 
 # --- Bounds (your M5 deliverable: tune these and justify them) ----------------
 MODEL = os.environ.get("CORTEX_MODEL", "gpt-4o-mini")
+CRITIC_MODEL = os.environ.get("CORTEX_CRITIC_MODEL", MODEL)
 MAX_ITERATIONS = int(os.environ.get("CORTEX_MAX_ITERATIONS", "8"))
 MAX_REVISIONS = int(os.environ.get("CORTEX_MAX_REVISIONS", "2"))
 COST_CAP_USD = float(os.environ.get("CORTEX_COST_CAP_USD", "0.50"))
@@ -116,6 +117,7 @@ def run(which: str = "happy") -> None:
         {"role": "user", "content": f"PM task brief:\n\n{task['body']}"},
     ]
     source_log: list[str] = [task["body"]]
+    latest_proposal_source = None
     revisions = 0
 
     for step in range(1, MAX_ITERATIONS + 1):
@@ -135,7 +137,15 @@ def run(which: str = "happy") -> None:
                 fn = call.function.name
                 args = json.loads(call.function.arguments or "{}")
                 result = tools.TOOLS[fn](**args)
-                source_log.append(f"{fn}({args}) -> {json.dumps(result)}")
+                source_entry = f"{fn}({args}) -> {json.dumps(result)}"
+                if fn == "propose_stories" and latest_proposal_source is not None:
+                    # A revised draft replaces the earlier mock queue proposal. Keep
+                    # only the current version in the evidence sent to the critic.
+                    source_log[latest_proposal_source] = source_entry
+                else:
+                    source_log.append(source_entry)
+                    if fn == "propose_stories":
+                        latest_proposal_source = len(source_log) - 1
                 print(f"\n[step {step}] TOOL {fn}({args})")
                 print(f"          -> {json.dumps(result)[:300]}")
                 messages.append({"role": "tool", "tool_call_id": call.id,
@@ -147,7 +157,7 @@ def run(which: str = "happy") -> None:
         print(f"\n[step {step}] PROPOSED OUTPUT:\n{proposed}")
 
         banner("CRITIC, independent validation")
-        verdict = review(client, MODEL, proposed, "\n".join(source_log))
+        verdict = review(client, CRITIC_MODEL, proposed, "\n".join(source_log))
         # Estimate critic spend too.
         bounds.cost += (verdict["_usage"]["prompt"] * PRICE_IN
                         + verdict["_usage"]["completion"] * PRICE_OUT) / 1_000_000
