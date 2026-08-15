@@ -7,9 +7,15 @@
 
 ## 1. Trigger & loop type
 
-**Chosen type:** _heartbeat · cron · hook · goal_
+**Loop type:** Hook + Cron
 
-_Why this type? (e.g. a Monday-morning cron that assembles the weekly update, plus a hook on a new PRD to propose stories.)_
+Cortex needs to react when the PM needs support or when new material evidence arrives, but it should also run a regular sweep to catch anything that was missed — especially when a PM is OOO or something slips through because of human error.
+
+**Why not heartbeat:** Cortex does not need to poll continuously; that would create unnecessary work and cost.
+
+**Why not goal:** Each run has a bounded job rather than operating continuously toward an open-ended objective.
+
+**Idempotency:** Cortex should deduplicate repeated triggers using a unique evidence/event ID where available, with source + timestamp + content hash as a fallback. Before processing, it should check state to confirm the evidence has not already been handled.
 
 ## 2. Goal / definition of done
 
