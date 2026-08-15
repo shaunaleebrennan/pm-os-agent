@@ -8,43 +8,42 @@ Cortex takes a PM task brief, pulls authorised project context and recent activi
 
 ## The agentic slice
 
-Cortex uses judgment to decide which retrieved context is relevant, how to synthesise it into an accurate update, whether the evidence supports a risk status, and when uncertainty or policy requires escalation. Retrieval, permission checks, provenance, queue-cap enforcement, and the final review handoff are deterministic tools or workflow steps. The agent may prepare and propose work; the human owns approval and action.
+Retrieving project information is a deterministic, read-only tool step. Cortex's agentic slice is deciding which context is relevant, drafting the update, proposing commitment-safe language, interpreting risk, deciding when to escalate, and preparing a capped story proposal. A human validates the judgment calls and owns approval and publication.
 
 ## The workflow, decision by decision
 
-The course's Cortex working set is kept intact. Each of its eight atomic decisions is scored on **reversibility**, **blast radius**, and **measurability**. **Below** means Cortex may perform the work within its enforced bounds; **Above** means a human owns it.
-
 | Decision / action | Reversibility (H/M/L) | Blast radius (H/M/L) | Measurability (H/M/L) | Above / Below | HITL? |
 |---|---|---|---|---|---|
-| Pull the task's project state, recent activity, roadmap context, past updates, and team norms through authorised read-only tools | H | L | H | Below | No; deterministic read-only step |
-| Decide which retrieved context is relevant to the requested leadership update and exclude unrelated or confidential material | H | M | M | Below | Targeted review for ambiguity or confidentiality |
-| Draft a concise leadership status update whose claims, metrics, and dates are traceable to the retrieved evidence | H | M | H | Below | Required approval before use or publication |
-| Choose tone and commitment-safe language using past updates and team norms, without implying an unconfirmed date or launch decision | H | M | M | Below | Required approval before use or publication |
-| Flag evidence-backed risks and blockers and assign green, yellow, or red only when the sources support it | H | M | M | Below | Required review of risk status |
-| Decide whether to stop and escalate because evidence is missing or conflicting, a Sev-1 or unconfirmed date is involved, the request is outside norms, or content is confidential | H | M | H | Below | Escalation is the HITL outcome |
-| Propose and queue only the capped batch of backlog stories justified by the brief and PRD, clearly labelled for human review | H | M | H | Below | Required approval; proposal creates nothing |
-| Approve or post the update, create or merge backlog work, commit a ship date, or mark a launch gate | L | H | H | Above | Human owned; Cortex has no execution tools |
+| Pull project state and recent activity through authorised read-only tools | H | L | H | Below | No |
+| Decide which retrieved context is relevant to the leadership update | H | M | M | Below | Yes; human validates the selected context in the draft |
+| Draft the evidence-grounded leadership update | H | L | H | Below | Yes; human reviews the completed update before publication |
+| Decide tone and commitment-safe language | H | M | L | Below | Yes; human approves tone and implied commitments |
+| Flag evidence-backed risks and propose green, yellow, or red status | H | M | M | Below | Yes; human validates the status and supporting evidence |
+| Choose when to stop and escalate under the explicit safety rules | H | M | H | Below | Escalation is the HITL handoff |
+| Propose and queue a capped story batch grounded in the PRD | H | M | M | Below | Yes; PM approves, changes, or rejects the proposal |
+| Approve and publish the leadership update | L | H | H | Above | Human owned; Cortex has no publishing tool |
 
-## One-sentence justifications
+## The golden rule, applied
 
-- **Pull project context:** Below the line because authorised read-only retrieval is easy to reverse, has low blast radius, and can be checked exactly against the source records.
-- **Decide relevant context:** Below the line with targeted review because selections can be corrected, but omitting a key fact or including confidential material could distort the update and relevance is only partly measurable.
-- **Draft the update:** Below the line with required approval because a draft is reversible and its factual grounding is highly testable, but leadership-facing language can still influence decisions.
-- **Choose tone and commitment-safe language:** Below the line with required approval because wording can be revised, but implied promises can carry a medium blast radius and tone is only moderately measurable.
-- **Flag risks and blockers:** Below the line with required review because the classification is reversible and evidence can be inspected, but an incorrect status could misdirect attention or conceal risk.
-- **Decide when to escalate:** Below the line because stopping is highly reversible and measurable against explicit conditions, while escalation prevents uncertain or prohibited work from gaining blast radius.
-- **Propose a capped story batch:** Below the line with required approval because the queue is reversible, the tool-enforced cap is measurable, and the proposal creates no backlog items or commitments.
-- **Approve, publish, or commit:** Above the line because externalised decisions and commitments have high blast radius, are difficult to reverse once acted upon, and require accountable human authority.
+- **Pull project state and activity** sits below the line because it is highly reversible, has a low blast radius, and is highly measurable; deciding factor: all three axes are green.
+- **Deciding which context is relevant** sits below the line with HITL because it is highly reversible, has a medium blast radius, and is only moderately measurable; deciding factor: measurability, because relevance requires human judgment.
+- **Drafting the leadership update** sits below the line because it is highly reversible, has a low blast radius while private, and is highly measurable against the source evidence; deciding factor: all three axes are green, with HITL applied before the completed update is published.
+- **Deciding tone and commitment level** sits below the line with HITL because wording is highly reversible, has a medium blast radius, and is difficult to measure objectively; deciding factor: low measurability, because appropriate tone and implied commitment require human judgment.
+- **Flagging risks and assigning status** sits below the line with HITL because the proposed status is highly reversible, has a medium blast radius, and is only moderately measurable; deciding factor: measurability, because interpreting what the evidence means is not fully objective.
+- **Choosing when to escalate** sits below the line because stopping is highly reversible, a missed trigger has a medium blast radius, and the explicit escalation rules are highly measurable; deciding factor: measurability, with escalation itself acting as the HITL handoff.
+- **Proposing a capped story batch** sits below the line with HITL because the proposal is highly reversible, has a medium blast radius on sprint planning, and is only moderately measurable; deciding factor: measurability, because prioritisation requires PM judgment.
+- **Approving and publishing the update** sits above the line because it has low reversibility, a high blast radius, and high measurability only after the impact; deciding factor: blast radius, because an incorrect or confidential update could affect leadership decisions and trust.
 
-## Agent anatomy (Module 1 view)
+## Agent anatomy (sketch)
 
-- **Model:** Decide relevant context, synthesise the evidence, draft the update, flag supported risks, and recognise when to escalate.
-- **Tools:** Read-only project, activity, roadmap, past-update, and team-norm tools · a bounded `propose_stories` queue that creates nothing · no post, send, create, close, merge, commit-date, or launch-gate tools.
-- **Memory/context:** Use retrieved past updates and decisions for tone and precedent while grounding every current-state claim in fresh project evidence.
-- **HITL:** End with either `DONE`—the update and any story proposals queued for review—or `ESCALATE`; in both cases a human takes over before any consequential action.
-- **Loop:** Defined in M2 `loop-spec.md`.
-- **Bounds and evals:** Defined and demonstrated in M5 `bounds-and-evals.md`.
+- **Model:** Use a fast model by default for routine relevance assessment, grounded drafting, and straightforward story proposals. Escalate to a frontier model only when evidence conflicts, context is ambiguous, or the decision involves sensitive commitment or prioritisation judgment. Deterministic retrieval remains a tool step.
+- **Tools:** Use read-only project, activity, roadmap, past-update, and team-norm tools plus a capped proposal queue. The queue creates only a draft for human review, not backlog items or commitments. Cortex has no post, send, create, close, merge, commit-date, or launch-gate tools.
+- **Memory:** Retain approved summaries, source provenance, and human corrections so Cortex can use useful context and past decisions, while always retrieving current project facts fresh.
+- **HITL:** Use the checkpoints defined in this Agent Line Map. Cortex prepares and proposes; a human validates judgment calls and owns publication.
+- **Loop:** Placeholder; defined in M2 `loop-spec.md`.
+- **Bounds:** Placeholder; defined in M5 `bounds-and-evals.md`.
+- **Evals:** Placeholder; defined in M5 `bounds-and-evals.md`.
 
 ## Hardest call
 
-**Whether Cortex should propose backlog stories as well as draft the update.** A proposal makes the agent useful across the full supplied workflow, but backlog changes can create hidden commitments. The deciding factor is blast radius: Cortex may queue a small, tool-capped proposal backed by the PRD, but it cannot create, prioritise, size, or approve the stories, and a human must review the batch.
+**My hardest call was deciding which context is relevant.** I initially questioned whether this should remain human-owned because selecting the wrong evidence—or missing something important—could distort the whole update. But if a human has to select all the context, Cortex loses the core judgment task that makes it useful as an agent. **Measurability settled it:** relevance does not always have one objectively correct answer, so Cortex should make the initial selection and explain its reasoning, with a human validating it at the HITL checkpoint.
