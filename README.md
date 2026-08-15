@@ -1,10 +1,10 @@
-# Cortex: Product Investment & Commercial Strategy Agent
+# Cortex: PM Chief-of-Staff Agent
 
-> My final project for Product School's **Run Your AI Agent Team** certification. Cortex connects product, market, customer, competitive, analyst, pipeline, win/loss, adoption, roadmap, cost, and ROI evidence to support product investment and commercial strategy decisions—while humans retain ownership of consequential commitments.
+> My final project for Product School's **Run Your AI Agent Team** certification. Cortex turns a PM task brief and verified project context into a grounded leadership status update and a capped batch of proposed backlog stories, then stops at a human-in-the-loop checkpoint before anything is posted or committed.
 
-This project follows the Final Project Brief's approved **bring-your-own agent/domain** path. It adapts the supplied Cortex PM chief-of-staff scenario to a product investment and commercial strategy domain; it does not replace the course's learning architecture. The same Cortex scaffold and required anatomy remain in place: an agent line, loop, tools, critic, explicit human-in-the-loop (HITL) checkpoint, memory, bounds, evals, a real run, and a real blast radius. Each module will evolve that architecture in sequence.
+This repository follows the supplied Cortex course scaffold. The project keeps the course's PM chief-of-staff workflow and develops it module by module: draw the agent line, shape the loop, add orchestration and an independent critic, design memory and context, enforce bounds and evals, and demonstrate the result through real runs.
 
-For now, only this dashboard and the Module 1 Agent Line Map have been adapted. The runnable starter in `00-build/` and Modules 2–6 remain unchanged until their corresponding course work begins.
+The required Cortex anatomy remains visible throughout: a loop with a definition of done, read-only tools, an independent critic, iteration and cost/commitment bounds, an explicit human-in-the-loop (HITL) checkpoint, and jailbreak refusal. The runnable starter in `00-build/` is the implementation that these module decisions progressively refine.
 
 ---
 
@@ -20,26 +20,24 @@ For now, only this dashboard and the Module 1 Agent Line Map have been adapted. 
 
 ## The agent in one sentence
 
-Cortex helps product and commercial leaders decide where deeper investigation or action may be warranted by selecting relevant cross-functional evidence, judging whether it is sufficient, applying approved scoring rules, and drafting evidence-linked interpretations and recommendations; humans approve publication and own roadmap, investment, pricing, packaging, and GTM commitments.
+Cortex helps a human PM prepare an evidence-grounded leadership update and a capped set of proposed backlog stories by deciding which authorised project context matters, drafting from that evidence, flagging risks, and escalating when required; the human approves all publication, commitments, dates, launch gates, and backlog changes.
 
 ## Agent line and blast radius
 
-- **Real access:** read-only access to approved product, market, customer, competitive, analyst, pipeline, win/loss, adoption, roadmap, cost, and ROI evidence sources.
-- **Agentic work:** decide which evidence is relevant to the decision, identify conflicts or gaps, judge whether the evidence is sufficient, and draft a recommendation with confidence and caveats.
-- **Deterministic workflow:** retrieve authorised records, preserve provenance, remove exact duplicates, apply approved calculations, and route drafts to review.
-- **Explicit HITL:** a named human must review evidence, confidence, caveats, and the draft before anything is published or used as a commitment.
-- **Human-owned decisions:** roadmap, product investment, pricing, packaging, and GTM commitments are never made or executed by the agent.
-- **Real blast radius:** a weak interpretation could influence executive prioritisation or commercial direction, so the system stops before publication or commitment and provides no write tools for those actions.
+- **Below the line:** read the brief; retrieve authorised project, activity, roadmap, past-update, and team-norm data; select relevant context; draft the update; flag risks; decide when to escalate; and queue a capped story proposal for review.
+- **Above the line:** post or send an update; create, close, or merge work; commit a ship date; mark a launch gate; approve scope; or bypass confidentiality and queue limits.
+- **Explicit HITL:** a human reviews the grounded update and any proposed stories. Nothing is posted, created, merged, dated, or committed by Cortex.
+- **Real blast radius:** Cortex handles live project evidence and prepares leadership-facing work, so an unsupported claim or implied commitment could misdirect decisions. Missing, conflicting, confidential, or out-of-bounds cases must stop and escalate.
 
 ## Build & demo
 
-- **How you built it:** Adapt the supplied transparent Cortex build with a coding agent, module by module, starting in `00-build/` when the course reaches implementation.
+- **How it is built:** Direct a coding agent to refine the supplied transparent Cortex implementation in `00-build/`, one course module at a time.
 - **Demo link:** _[optional shareable URL]_
 - **Run screenshots:** _required, collected M2 to M6 in `06-autonomy/prototype.md`_
 
 ## Where it sits on the Trust Ladder
 
-**Design stage.** The intended starting rung is supervised: Cortex may retrieve, assess, score, and draft, but a human reviews the output before publication and owns every consequential strategic decision. Later eval evidence will determine whether any bounded tasks can climb the ladder.
+**Supervised.** Cortex retrieves, reasons, drafts, checks, and proposes; a human approves the output and owns every consequential action. Evals and bounded run evidence must justify any later increase in autonomy.
 
 ---
 
