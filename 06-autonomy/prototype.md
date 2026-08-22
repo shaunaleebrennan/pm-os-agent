@@ -20,7 +20,7 @@ Real screenshots of *your* Cortex running. These are the `00-build/CORTEX-ANATOM
 | # | Screenshot | What it shows | From |
 |---|---|---|---|
 | 1 | ![M2 happy-path run](screenshots/m2-happy-path.png) | happy-path run: a real drafted update + the HITL checkpoint (queued, not posted) | M2 |
-| 2 | [M3 critic-rejection transcript](#m3-critic-rejection-transcript) | critic rejects an invented metric, unsupported status, false publication claim, and unevidenced queue claim | M3 |
+| 2 | ![M3 critic-rejection run](screenshots/m3-critic-rejection.png) | critic rejects an invented metric, unsupported status, false publication claim, and unevidenced queue claim | M3 |
 | 3 | _[img]_ | a grounded update citing pulled activity + a caught hallucination | M4 |
 | 4 | _[img]_ | jailbreak refused + escalated | M5 |
 | 5 | _[img]_ | an iteration/cost/queue bound halting a runaway | M5 |
