@@ -6,7 +6,16 @@
 
 ## 1. Why split? (or why not)
 
-_Run the default-to-simple check. Do you actually need subagents/a fleet? What's the real reason (separation of concerns · parallelism · independent validation · context-window pressure)? If not, say so and stop here._
+**Decision: Split once — Cortex + one independent validator.**
+
+| Reason | Applies? | Why / why not |
+|---|---|---|
+| Separation of concerns | No | The evidence and recommendation work is clear enough to stay together; quality control can be justified separately under the validator reason. |
+| Parallelism | No | The work is better handled in one reasoning flow. The value is in the quality of the analysis, not trying to save time in retrieval. |
+| Independent validator | Yes | Cortex is making recommendations that could significantly change what a PM chooses to focus on, so independent validation is crucial to ensure the recommendations are sound. |
+| Context-window pressure | No | Cortex can keep the main analysis coherent using retrieval, selection and bounded context. Context management should be solved through product and engineering design, not by adding another agent. |
+
+**Why this boundary:** There is no need to split further because additional agents would not add meaningful value.
 
 ## 2. Topology
 
