@@ -95,7 +95,8 @@ result only when a revised proposal is actually queued.
 - Maximum Validator calls: **2** (initial draft plus one revision).
 - Whole-run cost cap: **$0.50**; queue cap: **10 stories**.
 - The successful happy-path test reached the human checkpoint with one Validator
-  call and reported an internal estimate of approximately **$0.0019**.
+  call in approximately **8 seconds** and reported an internal estimate of
+  approximately **$0.0019**.
 
 The reported cost is directional, not a verified mixed-model cost: the current
 calculator applies one configured input/output price pair to both Cortex and the
