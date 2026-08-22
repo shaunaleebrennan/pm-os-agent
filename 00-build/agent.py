@@ -70,12 +70,12 @@ TOOL_SCHEMAS = [
         "parameters": {"type": "object", "properties": {
             "query": {"type": "string"}}, "required": []}}},
     {"type": "function", "function": {
-        "name": "get_norms", "description": "Return the team norms / PM playbook the agent must follow.",
+        "name": "get_norms", "description": "Retrieve current team-norm sections. Query every task topic, e.g. 'status update backlog stories'.",
         "parameters": {"type": "object", "properties": {
             "query": {"type": "string"}}, "required": []}}},
     {"type": "function", "function": {
         "name": "propose_stories",
-        "description": "Queue a set of backlog stories for human approval (creates nothing; rejected above the item cap).",
+        "description": "Queue backlog stories for human approval (creates nothing; rejects oversized batches and work matching merged PRs).",
         "parameters": {"type": "object", "properties": {
             "project_id": {"type": "string"},
             "stories": {"type": "array", "items": {"type": "string"}},
@@ -109,6 +109,7 @@ def run(which: str = "happy") -> None:
         print(task)
         return
 
+    project_scope = tools.project_id_from_task(task["body"])
     banner(f"CORTEX RUN, fixture: task-{which}  (auto-queue cap {MAX_QUEUE_ITEMS} items)")
     print(task["body"])
 
@@ -119,6 +120,8 @@ def run(which: str = "happy") -> None:
     evidence_log: list[dict] = []
     latest_proposal_source = None
     revisions = 0
+    requires_story_proposal = ("propose" in task["body"].lower()
+                               and "stories" in task["body"].lower())
 
     for step in range(1, MAX_ITERATIONS + 1):
         if bounds.over_cap():
@@ -136,8 +139,9 @@ def run(which: str = "happy") -> None:
             for call in msg.tool_calls:
                 fn = call.function.name
                 args = json.loads(call.function.arguments or "{}")
-                result = tools.TOOLS[fn](**args)
-                source_entry = {"tool": fn, "arguments": args, "result": result}
+                scoped_args, scope_error = tools.enforce_project_scope(fn, args, project_scope)
+                result = scope_error or tools.TOOLS[fn](**scoped_args)
+                source_entry = {"tool": fn, "arguments": scoped_args, "result": result}
                 if fn == "propose_stories" and latest_proposal_source is not None:
                     # A revised draft replaces the earlier mock queue proposal. Keep
                     # only the current version in the evidence sent to the critic.
@@ -150,11 +154,39 @@ def run(which: str = "happy") -> None:
                 print(f"          -> {json.dumps(result)[:300]}")
                 messages.append({"role": "tool", "tool_call_id": call.id,
                                  "content": json.dumps(result)})
+                if (fn == "get_project"
+                        and result.get("error") == "project_not_found"):
+                    banner("MISSING REQUIRED SOURCE, escalating to a human. "
+                           "No project evidence was found, no substitute project "
+                           "was used, and no GA date or status update was invented.")
+                    return
             continue
 
         # No tool calls => Cortex produced a proposed output. Validate it.
         proposed = msg.content or ""
         print(f"\n[step {step}] PROPOSED OUTPUT:\n{proposed}")
+
+        proposal_succeeded = any(
+            entry.get("tool") == "propose_stories"
+            and entry.get("result", {}).get("status") == "queued_for_approval"
+            for entry in evidence_log
+        )
+        if requires_story_proposal and not proposal_succeeded:
+            banner("INFRASTRUCTURE GUARD, required story proposal was not queued."
+                   " Blocking unsupported completion claim.")
+            if revisions >= MAX_REVISIONS:
+                banner(f"REVISION CAP hit ({MAX_REVISIONS}). Escalating to a human "
+                       f"instead of accepting an incomplete handoff. "
+                       f"Run cost ≈ ${bounds.cost:.4f}")
+                return
+            revisions += 1
+            messages.append(msg)
+            messages.append({"role": "user", "content":
+                             "Infrastructure rejected that completion claim: this task "
+                             "requires proposed stories to be queued through "
+                             "propose_stories before you say they are queued or done. "
+                             "Use the tool with evidence-grounded stories, or escalate."})
+            continue
 
         banner("CRITIC, independent validation")
         validator_handoff = {
