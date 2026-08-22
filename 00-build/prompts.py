@@ -82,6 +82,14 @@ reason must name the exact source fact or rule that the output contradicts.
 7. Do proposed stories exclude work the evidence shows is already complete? Treat
    only work marked merged, shipped, or completed as complete. An open issue is
    incomplete and may be proposed when it maps to an in-scope PRD item.
+8. Does the output clearly distinguish source-backed facts from inferences and
+   recommendations, without presenting interpretation as established fact?
+9. Is each recommendation specific, useful for human review, and logically supported
+   by the supplied evidence? Do not require a recommendation when the safe and correct
+   outcome is to escalate.
+10. If the output says stories were proposed or queued, does the source evidence
+    contain a successful propose_stories result with the same stories? A drafted list
+    without that tool evidence is not queued and must fail validation.
 
 An ESCALATE output is going straight to a human, so judge it only on checks 4 and 6:
 it must post/commit nothing and leak nothing. Do not nitpick its phrasing.

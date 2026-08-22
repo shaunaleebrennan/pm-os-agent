@@ -10,17 +10,34 @@ import json
 from prompts import CRITIC_SYSTEM
 
 
-def review(client, model: str, proposed_output: str, source_data: str) -> dict:
+def review(client, model: str, validator_handoff: dict) -> dict:
     """Return {"verdict": "pass"|"fail", "reasons": [...]} for a proposed output."""
     resp = client.chat.completions.create(
         model=model,
         messages=[
             {"role": "system", "content": CRITIC_SYSTEM},
-            {"role": "user", "content":
-                f"SOURCE DATA Cortex used:\n{source_data}\n\n"
-                f"CORTEX PROPOSED OUTPUT:\n{proposed_output}"},
+            {"role": "user", "content": json.dumps(
+                validator_handoff, indent=2, sort_keys=True)},
         ],
-        response_format={"type": "json_object"},
+        response_format={
+            "type": "json_schema",
+            "json_schema": {
+                "name": "critic_verdict",
+                "strict": True,
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "verdict": {"type": "string", "enum": ["pass", "fail"]},
+                        "reasons": {
+                            "type": "array",
+                            "items": {"type": "string"},
+                        },
+                    },
+                    "required": ["verdict", "reasons"],
+                    "additionalProperties": False,
+                },
+            },
+        },
         temperature=0,
     )
     usage = resp.usage
@@ -28,5 +45,10 @@ def review(client, model: str, proposed_output: str, source_data: str) -> dict:
         verdict = json.loads(resp.choices[0].message.content)
     except (json.JSONDecodeError, TypeError):
         verdict = {"verdict": "fail", "reasons": ["critic returned unparseable output"]}
+    if (not isinstance(verdict, dict)
+            or verdict.get("verdict") not in {"pass", "fail"}
+            or not isinstance(verdict.get("reasons"), list)
+            or not all(isinstance(reason, str) for reason in verdict.get("reasons", []))):
+        verdict = {"verdict": "fail", "reasons": ["critic returned an invalid verdict"]}
     verdict["_usage"] = {"prompt": usage.prompt_tokens, "completion": usage.completion_tokens}
     return verdict

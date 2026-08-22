@@ -40,9 +40,9 @@ except ImportError:
 
 # --- Bounds (your M5 deliverable: tune these and justify them) ----------------
 MODEL = os.environ.get("CORTEX_MODEL", "gpt-4o-mini")
-CRITIC_MODEL = os.environ.get("CORTEX_CRITIC_MODEL", MODEL)
+CRITIC_MODEL = os.environ.get("CORTEX_CRITIC_MODEL", "gpt-4o")
 MAX_ITERATIONS = int(os.environ.get("CORTEX_MAX_ITERATIONS", "8"))
-MAX_REVISIONS = int(os.environ.get("CORTEX_MAX_REVISIONS", "2"))
+MAX_REVISIONS = min(max(int(os.environ.get("CORTEX_MAX_REVISIONS", "1")), 0), 1)
 COST_CAP_USD = float(os.environ.get("CORTEX_COST_CAP_USD", "0.50"))
 MAX_QUEUE_ITEMS = int(os.environ.get("CORTEX_MAX_QUEUE_ITEMS", "10"))
 # Rough $ per 1M tokens for your chosen model, set to match its pricing.
@@ -116,7 +116,7 @@ def run(which: str = "happy") -> None:
         {"role": "system", "content": CORTEX_SYSTEM},
         {"role": "user", "content": f"PM task brief:\n\n{task['body']}"},
     ]
-    source_log: list[str] = [task["body"]]
+    evidence_log: list[dict] = []
     latest_proposal_source = None
     revisions = 0
 
@@ -137,15 +137,15 @@ def run(which: str = "happy") -> None:
                 fn = call.function.name
                 args = json.loads(call.function.arguments or "{}")
                 result = tools.TOOLS[fn](**args)
-                source_entry = f"{fn}({args}) -> {json.dumps(result)}"
+                source_entry = {"tool": fn, "arguments": args, "result": result}
                 if fn == "propose_stories" and latest_proposal_source is not None:
                     # A revised draft replaces the earlier mock queue proposal. Keep
                     # only the current version in the evidence sent to the critic.
-                    source_log[latest_proposal_source] = source_entry
+                    evidence_log[latest_proposal_source] = source_entry
                 else:
-                    source_log.append(source_entry)
+                    evidence_log.append(source_entry)
                     if fn == "propose_stories":
-                        latest_proposal_source = len(source_log) - 1
+                        latest_proposal_source = len(evidence_log) - 1
                 print(f"\n[step {step}] TOOL {fn}({args})")
                 print(f"          -> {json.dumps(result)[:300]}")
                 messages.append({"role": "tool", "tool_call_id": call.id,
@@ -157,7 +157,25 @@ def run(which: str = "happy") -> None:
         print(f"\n[step {step}] PROPOSED OUTPUT:\n{proposed}")
 
         banner("CRITIC, independent validation")
-        verdict = review(client, CRITIC_MODEL, proposed, "\n".join(source_log))
+        validator_handoff = {
+            "task_goal": task["body"],
+            "source_evidence": evidence_log,
+            "agent_line_rules": {
+                "allowed_outcome": "prepare work and queue it for human review",
+                "prohibited_actions": [
+                    "post, publish, or send",
+                    "create, close, or merge a ticket or PR",
+                    "commit a ship date or mark a launch gate",
+                    "make roadmap, pricing, investment, packaging, or GTM decisions",
+                    "share confidential or embargoed material",
+                ],
+                "max_revisions": MAX_REVISIONS,
+                "max_validator_calls": MAX_REVISIONS + 1,
+                "max_queue_items": MAX_QUEUE_ITEMS,
+            },
+            "proposed_output": proposed,
+        }
+        verdict = review(client, CRITIC_MODEL, validator_handoff)
         # Estimate critic spend too.
         bounds.cost += (verdict["_usage"]["prompt"] * PRICE_IN
                         + verdict["_usage"]["completion"] * PRICE_OUT) / 1_000_000
