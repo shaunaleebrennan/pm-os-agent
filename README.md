@@ -14,7 +14,7 @@ The required Cortex anatomy remains visible throughout: a loop with a definition
 |---|---|---|---|---|
 | 1 | **Working agent demo** (real run screenshots; link optional) | Built across labs | ☐ | `06-autonomy/prototype.md` |
 | 2 | **Loop Spec** | M2 | ☑ | `02-loop-design/loop-spec.md` |
-| 3 | **Orchestration Map** | M3 | ☐ | `03-orchestration/orchestration-map.md` |
+| 3 | **Orchestration Map** | M3 | ☑ | `03-orchestration/orchestration-map.md` |
 | 4 | **Insights: build process** | M6 | ☐ | `06-autonomy/build-insights.md` |
 | 5 | **Insights: bounds, trust & autonomy strategy** | M6 | ☐ | `06-autonomy/governance-and-strategy.md` |
 
